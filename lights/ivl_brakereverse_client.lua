@@ -29,9 +29,10 @@ function IVL.updateBrakeReverse(vehicle)
 	local reverseOld = IVL.getData(vehicle, "reverse")
 	
 	local gear = getVehicleCurrentGear(vehicle)
+	local engineState = getVehicleEngineState(vehicle)
 
 	-- Turn on reverse light if in reverse gear
-	reverseNew = (gear == 0)
+	reverseNew = engineState and (gear == 0)
 
 	if driver then
 		local accelerateControl = getPedControlState(driver, "accelerate")
@@ -39,9 +40,12 @@ function IVL.updateBrakeReverse(vehicle)
 
 		-- Turn on braking lights if in a forwards gear and brake key is pressed
 		-- or if in reverse gear and accelerate key is pressed
-		brakeNew = (gear > 0 and brakeControl)
-			or (gear == 0 and accelerateControl)
+		brakeNew = engineState and
+			((gear > 0 and brakeControl)
+			or (gear == 0 and accelerateControl))
 	end
+
+	dxDrawText("gear: "..tostring(gear), 10, 15)
 	
 	if brakeOld ~= brakeNew then
 		setVehicleCustomLightsPower(vehicle, BRAKE_LIGHTS, brakeNew and 1 or 0)
