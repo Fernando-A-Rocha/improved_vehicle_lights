@@ -42,8 +42,6 @@ function IVL.updateBrakeReverse(vehicle)
 			or (gear == 0 and accelerateControl)
 	end
 
-	dxDrawText("gear: "..tostring(gear), 10, 15)
-	
 	if brakeOld ~= brakeNew then
 		setVehicleCustomLightsPower(vehicle, BRAKE_LIGHTS, brakeNew and 1 or 0)
 		setVehicleLightState(vehicle, 2, 1)
