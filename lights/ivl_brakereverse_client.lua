@@ -22,7 +22,6 @@ end
 function IVL.updateBrakeReverse(vehicle)
 	
 	local driver = getVehicleOccupant(vehicle)
-	if not driver then return false end
 
 	local reverseNew = false
 	local brakeNew = false
@@ -30,17 +29,18 @@ function IVL.updateBrakeReverse(vehicle)
 	local reverseOld = IVL.getData(vehicle, "reverse")
 	
 	local gear = getVehicleCurrentGear(vehicle)
-	local accelerateControl = getPedControlState(driver, "accelerate")
-	local brakeControl = getPedControlState(driver, "brake_reverse")
-	if not (accelerateControl and brakeControl) then
 
-		reverseNew =
-			gear == 0 and (brakeControl or reverseOld)
+	-- Turn on reverse light if in reverse gear
+	reverseNew = (gear == 0)
 
-		brakeNew = 
-			(gear == 0 and accelerateControl) or
-			(gear > 0 and brakeControl) or
-			(brakeOld and not(accelerateControl or brakeControl))
+	if driver then
+		local accelerateControl = getPedControlState(driver, "accelerate")
+		local brakeControl = getPedControlState(driver, "brake_reverse")
+
+		-- Turn on braking lights if in a forwards gear and brake key is pressed
+		-- or if in reverse gear and accelerate key is pressed
+		brakeNew = (gear > 0 and brakeControl)
+			or (gear == 0 and accelerateControl)
 	end
 	
 	if brakeOld ~= brakeNew then
